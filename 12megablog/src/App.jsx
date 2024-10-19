@@ -1,16 +1,44 @@
 import React from 'react'
-import './App.css'
+import { useEffect } from 'react';
+import { useDispatch } from 'react-dom';
+import authService from './Appwrite/auth';
+import { logIn, logOut } from './store/authSlice'
+
 
 function App() {
   // console.log(process.env.VITE_APPWRITE_URL)  //for App created by create React App
-  console.log(import.meta.env.VITE_APPWRITE_URL) //for App created by create vite App
+  // console.log(import.meta.env.VITE_APPWRITE_URL) //for App created by create vite App
+  const [loading, setLoading] = React.useState(true);
+  const dispatch = useDispatch();
 
-  return (
+  useEffect(() => {
+    authService.isUserLoggedIn
+      .then((data) => {
+        if (data) {
+          dispatch(logIn({ data }))
+        } else {
+          dispatch(logOut)
+        }
+      })
+      .finally(() => (
+        setLoading(false)
+      ))
+  }, [])
+
+
+  return !loading ? (
 
     <>
-      <h1>My App</h1>
+      <div className='min-h-screen flex flex-wrap content-between bg-slate-600'>
+        <div className='w-full block'>
+        <Header/>
+        <Footer/>
+
+        </div>
+      </div>
+
     </>
-  )
+  ) : null
 }
 
 export default App
